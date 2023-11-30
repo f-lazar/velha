@@ -3,25 +3,20 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-int count(const char *string, char token) {
-	int count = 0;
-	while (*string != '\0') {
-		count += *string++ == token;
-	}
-	return count;
-}
-
 void print_tab(char tabuleiro[]) {
 	printf("%c %c %c\n", tabuleiro[0], tabuleiro[1], tabuleiro[2]);
 	printf("%c %c %c\n", tabuleiro[3], tabuleiro[4], tabuleiro[5]);
 	printf("%c %c %c\n", tabuleiro[6], tabuleiro[7], tabuleiro[8]);
 }
 
-void check (int position, int A, char B,char tabuleiro[]) {
-	if (position < 1 || position > 9 || count(tabuleiro, B) != A) {
-		printf("JOGA CERTO TROUXA"); 
-		exit(-1);
-	}
+bool check (int position, char tabuleiro[]) {
+	int num = position - 1;
+	return (
+	(position < 1) || 
+	(position > 9) || 
+	(tabuleiro[num]=='X') ||
+	(tabuleiro[num] == 'O')
+	);
 }		
 
 bool checkwin(char tabuleiro[]) {
@@ -53,50 +48,38 @@ void replace_tab (char tabuleiro[]){
 
 int main () {
 	int position;
-	int X = 0;
-	int O = 0;
 	char tabuleiro[] = "123456789";
-	while (X < 5) {
+	char token = 'X';
+	while (true) {
 		print_tab(tabuleiro);
-		printf("Declare posicao:");
-		scanf("%d", &position);
-		replace(position,'X',tabuleiro);
-		X++;
-		check(position,X,'X',tabuleiro);
 		if (checkwin(tabuleiro)){ 
-			printf("Se ferrou O, X ganhou \n");
+			if (token == 'O')
+				printf("Se ferrou O, X ganhou \n");
+			else 
+				printf("Se ferrou X, O ganhou\n");
 			char repeat;
 			printf("Jogar novamente? (S/N)");
 			scanf(" %c", &repeat);
 			if (repeat == 'S') {
 				replace_tab(tabuleiro);
-				X = 0;
-				O = 0;
+				token = 'X';
 				continue;
-			}
-			else
-				break;
-			}
-		print_tab(tabuleiro);
-		printf("Declare posicao:");
-		scanf("%d", &position);
-		replace(position,'O',tabuleiro);
-		O++;
-		check(position,O,'O',tabuleiro);
-		if (checkwin(tabuleiro)) { 
-			printf("Se ferrou X, O ganhou\n");
-			char repeat;
-			printf("Jogar novamente? (S/N)");
-			scanf(" %c", &repeat);
-			if (repeat == 'S') {
-				replace_tab(tabuleiro);
-				X = 0;
-				O = 0;
-			}
+			} 
 			else
 				break;
 		} 
-	}  
+		printf("Declare posicao:");
+		scanf(" %d", &position);
+		while (check(position,tabuleiro)== true) { 
+			printf("JOGA DIREITO TROUXA, que posicao tu que:");
+			scanf(" %d", &position);
+		} 
+		replace(position,token,tabuleiro);
+		if (token == 'X') 
+			token = 'O';
+		else
+			token = 'X';
+	}   
 	return 0;
 }
 
